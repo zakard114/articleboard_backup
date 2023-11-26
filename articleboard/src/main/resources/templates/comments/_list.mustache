@@ -1,0 +1,158 @@
+<div id="comments-list">
+    {{#commentDtos}}
+    <div class="card m-2" id="comments-{{id}}">
+        <div class="card-header">
+           {{nickname}}
+            <!-- Button trigger modal -->
+            <button type="button"
+                    class="btn btn-sm btn-outline-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#comment-edit-modal"
+                    data-bs-id="{{id}}"
+                    data-bs-nickname="{{nickname}}"
+                    data-bs-body="{{body}}"
+                    data-bs-article-id="{{articleId}}">Edit</button>
+            <!-- Comment delete button -->
+            <button type="button"
+                    class="btn btn-sm btn-outline-danger comment-delete-btn"
+                    data-comment-id="{{id}}">Delete</button>
+        </div>
+        <div class="card-body">
+            {{body}}
+        </div>
+    </div>
+    {{/commentDtos}}
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="comment-edit-modal" tabindex="-1"
+     aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Comment Edit</h5>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form>
+                    <!-- Nickname Input -->
+                    <div class="mb-3">
+                        <label class="form-label">Nickname</label>
+                        <input type="text" class="form-control"
+                               id="edit-comment-nickname"
+                               placeholder="nickname">
+                    </div>
+                    <!-- Comment Content Input -->
+                    <div class="mb-3">
+                        <label for="form-label">Content</label>
+                        <textarea type="text" class="form-control"
+                                  rows="3" id="edit-comment-body"
+                                  placeholder="content"></textarea>
+                    </div>
+                    <!-- Hidden input -->
+                    {{#article}}
+                        <input type="hidden" id="edit-comment-id">
+                        <input type="hidden" id="edit-comment-article-id">
+                    {{/article}}
+                    <!-- Send button -->
+                    <button type="button" class="btn btn-primary"
+                            id="comment-update-btn">Edit Confirm</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+
+<!-- Modal Event Process -->
+<script>
+    {
+        {
+            // Select Modal Element
+        const commentEditModal = document.querySelector("#comment-edit-modal");
+        // Detect Modal Event
+        commentEditModal.addEventListener("show.bs.modal", function (event) {
+            // 1. Select trigger button
+            const triggerBtn = event.relatedTarget;
+            // 2. Bring the data in
+            const id = triggerBtn.getAttribute("data-bs-id");
+            const nickname = triggerBtn.getAttribute("data-bs-nickname");
+            const body = triggerBtn.getAttribute("data-bs-body");
+            const articleId = triggerBtn.getAttribute("data-bs-article-id");
+            // 3. Change the data of the form
+            document.querySelector("#edit-comment-nickname").value = nickname;
+            document.querySelector("#edit-comment-body").value = body;
+            document.querySelector("#edit-comment-id").value = id;
+            document.querySelector("#edit-comment-article-id").value = articleId;
+        });
+    }
+
+    {
+        const commentUpdateBtn = document.querySelector("#comment-update-btn");
+        commentUpdateBtn.addEventListener("click", function(){
+
+            const comment = {
+                id: document.querySelector("#edit-comment-id").value,
+                nickname: document.querySelector("#edit-comment-nickname").value,
+                body: document.querySelector("#edit-comment-body").value,
+                article_id: document.querySelector("#edit-comment-article-id").value
+            };
+            console.log(comment);
+            // Call Edit REST API
+            const url = "/api/comments/"+comment.id;
+            fetch(url, {
+                method:"PATCH",
+                headers: {                     // Transfer data type(JSON) info.
+                    "Content-Type":"application/json"
+                },
+                body: JSON.stringify(comment) // send the comment object into JSON format
+            }).then(response => {
+                // Print Message according to HTTP response code
+                const msg = (response.ok)? "Comment has modified":"Comment edit failure..!";
+                alert(msg);
+                // Refresh the current page
+                window.location.reload();
+            })
+        });
+    }
+    }
+</script>
+
+<!-- Delete Comment -->
+<script>
+    const commentDeleteBtns = document.querySelectorAll(".comment-delete-btn")
+    // commentDeleteBtns.addEventListener("click", function (){
+    //     console.log("Delete Clicked Button..!");
+    // });
+    commentDeleteBtns.forEach(btn => {
+      btn.addEventListener("click", (event)=>{
+          // Select Event occurring element
+          const commentDeleteBtn = event.target;
+          // Bring the id of the target(a comment to delete)
+          const commentId = commentDeleteBtn.getAttribute("data-comment-id");
+          console.log(`Delete Button has pressed: comment #${commentId}`);
+          // Call Delete REST API
+          const url = `/api/comments/${commentId}`;
+          fetch(url, {
+              method:"DELETE"
+          }).then(response =>{
+              // Process deleting comment failure
+              if(!response.ok) {
+                  alert("Comment delete Failed");
+                  return;
+              }
+              // For succeed, erase the comment and call the corresponding message
+              const target = document.querySelector(`#comments-${commentId}`);
+              target.remove();
+              const msg = `Deleted comment #${commentId}.`;
+              alert(msg);
+              // Refresh the current page
+              window.location.reload();
+          })
+      });
+    });
+</script>

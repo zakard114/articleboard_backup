@@ -1,0 +1,52 @@
+<div class="card m2" id="comments-new">
+    <div class="card-body">
+        <form>
+            <div class="mb-3">
+                <label class="form-label">Nickname</label>
+                <input type="text" class="form-control" id="new-comment-nickname" placeholder="nickname">
+            </div>
+            <div class="mb-3">
+                <label for="form-label">Content</label>
+                <textarea type="text" class="form-control" rows="3" id="new-comment-body" placeholder="content"></textarea>
+            </div>
+            <!-- Hidden input -->
+            {{#article}}
+                <input type="hidden" id="new-comment-article-id" value="{{id}}">
+            {{/article}}
+            <!-- Send button -->
+            <button type="button" class="btn btn-primary" id="comment-create-btn">Comment</button>
+        </form>
+    </div>
+</div>
+<script>
+    {
+        // transform comment create button into a variable
+        const commentCreateBtn = document.querySelector("#comment-create-btn");
+        // Sense the click event
+        commentCreateBtn.addEventListener("click", function(){
+        // derive values related to an id
+            const comment = {
+                // nickname for the new comment
+                nickname: document.querySelector("#new-comment-nickname").value,
+                // body for the new comment
+                body: document.querySelector("#new-comment-body").value,
+                // Id of parental post
+                articleId: document.querySelector("#new-comment-article-id").value
+            };
+            // verification output
+            console.log(comment);
+
+            const url = "/api/articles/"+comment.articleId+"/comments";
+            fetch(url, {
+               method:"POST",
+               headers: {"Content-Type":"application/json"},
+               body: JSON.stringify(comment)
+            }).then(response=>{
+                const msg = (response.ok) ? "Comment registered":"Comment register failed..!";
+                alert(msg);
+                window.location.reload();
+
+            });
+        });
+    }
+</script>
