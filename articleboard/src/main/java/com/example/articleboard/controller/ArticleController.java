@@ -1,13 +1,13 @@
-package com.example.articleboard.articles;
+package com.example.articleboard.controller;
 
 import com.example.articleboard.dto.ArticleForm;
 import com.example.articleboard.dto.CommentDto;
 import com.example.articleboard.entity.Article;
 import com.example.articleboard.repository.ArticleRepository;
-import com.example.articleboard.repository.CommentRepository;
 import com.example.articleboard.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +25,7 @@ public class ArticleController {
     @Autowired
     CommentService commentService;
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/articles/new")
     public String newArticleForm(){
         return "/articles/new";
