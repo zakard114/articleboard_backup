@@ -17,3 +17,10 @@ INSERT INTO comment(article_id, nickname, body) VALUES(5, 'Choi', 'Pizza');
 INSERT INTO comment(article_id, nickname, body) VALUES(6, 'Park', 'Jogging');
 INSERT INTO comment(article_id, nickname, body) VALUES(6, 'Kim', 'Youtube');
 INSERT INTO comment(article_id, nickname, body) VALUES(6, 'Choi', 'Reading');
+
+CREATE TABLE if not exists persistent_logins (
+    username varchar_ignorecase(100) not null,
+    series varchar(64) primary key,
+    token varchar(64) not null,
+    last_used timestamp not null
+);
