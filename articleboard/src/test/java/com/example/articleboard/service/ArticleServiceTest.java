@@ -3,6 +3,7 @@ package com.example.articleboard.service;
 import com.example.articleboard.dto.ArticleForm;
 import com.example.articleboard.entity.Article;
 import com.example.articleboard.repository.ArticleRepository;
+import com.example.articleboard.service.ArticleService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

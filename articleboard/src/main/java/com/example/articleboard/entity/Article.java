@@ -1,24 +1,22 @@
 package com.example.articleboard.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
-@ToString
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Article {
+@ToString
+public class Article extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
+    @Column(length = 500, nullable = false) // Set column length and nullability
     private String title;
-    @Column
+    @Column(length = 2000, nullable = false)
     private String content;
 
     public void patch(Article article) {
